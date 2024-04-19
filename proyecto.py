@@ -29,9 +29,33 @@ df_jun['Fecha'] = pd.to_datetime(df_jun['Fecha']).dt.date
 df = pd.concat([df_ene, df_feb, df_mar, df_abr, df_may, df_jun])
 
 # Crear gráficos de líneas para NO2 y PM10
-fig = px.line(df, x='Fecha', y=['NO2 (ug/m3)', 'PM10 \n(ug/m3)'], title='Evolución de NO2 y PM10 de enero a junio de 2021',
-              labels={'Fecha': 'Fecha', 'value': 'Concentración (ug/m3)', 'variable': 'Contaminante'},
-              template='plotly_dark')
+fig_lineas = px.line(df, x='Fecha', y=['NO2 (ug/m3)', 'PM10 \n(ug/m3)'], title='Evolución de NO2 y PM10 de enero a junio de 2021',
+                     labels={'Fecha': 'Fecha', 'value': 'Concentración (ug/m3)', 'variable': 'Contaminante'},
+                     template='plotly_dark')
 
-# Mostrar el gráfico en Streamlit
-st.plotly_chart(fig, use_container_width=True)
+# Crear un gráfico de dispersión para NO2 vs PM10
+fig_dispersion = px.scatter(df, x='NO2 (ug/m3)', y='PM10 \n(ug/m3)', title='Diagrama de dispersión entre NO2 y PM10',
+                            labels={'NO2 (ug/m3)': 'NO2 (ug/m3)', 'PM10 \n(ug/m3)': 'PM10 (ug/m3)'},
+                            template='plotly_dark')
+
+# Crear una tabla con los datos
+tabla = df.copy()
+tabla['Fecha'] = pd.to_datetime(tabla['Fecha']).dt.strftime('%Y-%m-%d') # Formatear la fecha
+tabla = tabla.rename(columns={'PM10 \n(ug/m3)': 'PM10', 'NO2 (ug/m3)': 'NO2'}) # Renombrar las columnas
+tabla = tabla[['Fecha', 'PM10', 'NO2']] # Seleccionar las columnas que queremos mostrar en la tabla
+
+# Crear el dashboard con pestañas
+st.title('Dashboard de Calidad del Aire')
+st.markdown('Este dashboard muestra la evolución de la calidad del aire durante los primeros seis meses del año 2021.')
+
+# Agregar pestañas
+pestañas = st.sidebar.radio("Navegación", ['Gráfico de Líneas', 'Diagrama de Dispersión', 'Datos'])
+
+if pestañas == 'Gráfico de Líneas':
+    st.plotly_chart(fig_lineas)
+
+elif pestañas == 'Diagrama de Dispersión':
+    st.plotly_chart(fig_dispersion)
+
+elif pestañas == 'Datos':
+    st.write(tabla)
