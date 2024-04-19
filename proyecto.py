@@ -55,7 +55,19 @@ if pestañas == 'Gráfico de Líneas':
     st.plotly_chart(fig_lineas)
 
 elif pestañas == 'Diagrama de Dispersión':
-    st.plotly_chart(fig_dispersion)
+    # Agregar opciones interactivas para filtrar los datos
+    rango_no2 = st.slider("Seleccionar rango de NO2 (ug/m3)", float(df['NO2 (ug/m3)'].min()), float(df['NO2 (ug/m3)'].max()), (float(df['NO2 (ug/m3)'].min()), float(df['NO2 (ug/m3)'].max())))
+    rango_pm10 = st.slider("Seleccionar rango de PM10 (ug/m3)", float(df['PM10 \n(ug/m3)'].min()), float(df['PM10 \n(ug/m3)'].max()), (float(df['PM10 \n(ug/m3)'].min()), float(df['PM10 \n(ug/m3)'].max())))
+    
+    # Filtrar los datos según los rangos seleccionados
+    df_filtrado = df[(df['NO2 (ug/m3)'] >= rango_no2[0]) & (df['NO2 (ug/m3)'] <= rango_no2[1]) &
+                     (df['PM10 \n(ug/m3)'] >= rango_pm10[0]) & (df['PM10 \n(ug/m3)'] <= rango_pm10[1])]
+    
+    # Actualizar el gráfico de dispersión con los datos filtrados
+    fig_dispersion_filtrado = px.scatter(df_filtrado, x='NO2 (ug/m3)', y='PM10 \n(ug/m3)', title='Diagrama de dispersión entre NO2 y PM10 (Filtrado)',
+                                         labels={'NO2 (ug/m3)': 'NO2 (ug/m3)', 'PM10 \n(ug/m3)': 'PM10 (ug/m3)'},
+                                         template='plotly_dark')
+    st.plotly_chart(fig_dispersion_filtrado)
 
 elif pestañas == 'Datos':
     st.write(tabla)
