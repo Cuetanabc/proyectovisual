@@ -34,4 +34,4 @@ fig = px.line(df, x='Fecha', y=['NO2 (ug/m3)', 'PM10 \n(ug/m3)'], title='Evoluci
               template='plotly_dark')
 
 # Mostrar el gráfico en Streamlit
-st.plotly_chart(fig)
+st.plotly_chart(fig, use_container_width=True)
